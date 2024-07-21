@@ -3,26 +3,32 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 using System;
+using Unity.VisualScripting;
 
 /// <summary>
 /// Manages the playback of audio sounds in the game.
 /// </summary>
-public class SoundManager : MonoBehaviour {
+public class SoundManager : MonoBehaviour
+{
     public static SoundManager instance;
 
     [SerializeField]
     public Sound[] sounds;
 
-    private void Awake() {
-        if (instance == null) {
+    private void Awake()
+    {
+        if (instance == null)
+        {
             instance = this;
         }
-        else {
+        else
+        {
             Destroy(gameObject);
             return;
         }
 
-        foreach (Sound s in sounds) {
+        foreach (Sound s in sounds)
+        {
             s.source = gameObject.AddComponent<AudioSource>();
             s.source.clip = s.clip;
 
@@ -30,6 +36,10 @@ public class SoundManager : MonoBehaviour {
             s.source.pitch = s.pitch;
             s.source.loop = s.loop;
             s.source.playOnAwake = s.playOnAwake;
+            if (s.source.playOnAwake)
+            {
+                s.source.Play();
+            }
         }
     }
 
@@ -37,9 +47,11 @@ public class SoundManager : MonoBehaviour {
     /// Plays the sound with the specified name.
     /// </summary>
     /// <param name="name">The name of the sound to be played.</param>
-    public void Play(string name) {
+    public void Play(string name)
+    {
         Sound s = Array.Find(sounds, sound => sound.name == name);
-        if (s == null) {
+        if (s == null)
+        {
             Debug.LogWarning("Sound: " + name + " not found!");
             return;
         }
@@ -55,16 +67,20 @@ public class SoundManager : MonoBehaviour {
     /// Stops the sound with the specified name.
     /// </summary>
     /// <param name="name">The name of the sound to be stopped.</param>
-    public void Stop(string name) {
+    public void Stop(string name)
+    {
         Sound s = Array.Find(sounds, sound => sound.name == name);
-        if (s == null) {
+        if (s == null)
+        {
             Debug.LogWarning("Sound: " + name + " not found!");
             return;
         }
-        try {
+        try
+        {
             s.source.Stop();
         }
-        catch {
+        catch
+        {
             // Handle exception if necessary
         }
     }
@@ -74,9 +90,11 @@ public class SoundManager : MonoBehaviour {
     /// </summary>
     /// <param name="name">The name of the sound to be faded out.</param>
     /// <param name="fadeDuration">The duration of the fade-out effect.</param>
-    public void FadeOut(string name, float fadeDuration) {
+    public void FadeOut(string name, float fadeDuration)
+    {
         Sound s = Array.Find(sounds, sound => sound.name == name);
-        if (s == null) {
+        if (s == null)
+        {
             Debug.LogWarning("Sound: " + name + " not found!");
             return;
         }
@@ -84,10 +102,12 @@ public class SoundManager : MonoBehaviour {
         StartCoroutine(FadeOutCoroutine(s, fadeDuration));
     }
 
-    private IEnumerator FadeOutCoroutine(Sound sound, float fadeDuration) {
+    private IEnumerator FadeOutCoroutine(Sound sound, float fadeDuration)
+    {
         float startVolume = sound.source.volume;
 
-        for (float t = 0; t < fadeDuration; t += Time.deltaTime) {
+        for (float t = 0; t < fadeDuration; t += Time.deltaTime)
+        {
             sound.source.volume = Mathf.Lerp(startVolume, 0, t / fadeDuration);
             yield return null;
         }
@@ -101,9 +121,11 @@ public class SoundManager : MonoBehaviour {
     /// </summary>
     /// <param name="name">The name of the sound to be faded in.</param>
     /// <param name="fadeDuration">The duration of the fade-in effect.</param>
-    public void FadeIn(string name, float fadeDuration) {
+    public void FadeIn(string name, float fadeDuration)
+    {
         Sound s = Array.Find(sounds, sound => sound.name == name);
-        if (s == null) {
+        if (s == null)
+        {
             Debug.LogWarning("Sound: " + name + " not found!");
             return;
         }
@@ -111,13 +133,15 @@ public class SoundManager : MonoBehaviour {
         StartCoroutine(FadeInCoroutine(s, fadeDuration));
     }
 
-    private IEnumerator FadeInCoroutine(Sound sound, float fadeDuration) {
+    private IEnumerator FadeInCoroutine(Sound sound, float fadeDuration)
+    {
         float startVolume = 0; // Start with zero volume and increase gradually
 
         // Ensure the audio source is playing
         sound.source.Play();
 
-        for (float t = 0; t < fadeDuration; t += Time.deltaTime) {
+        for (float t = 0; t < fadeDuration; t += Time.deltaTime)
+        {
             sound.source.volume = Mathf.Lerp(startVolume, sound.volume, t / fadeDuration);
             yield return null;
         }
@@ -128,8 +152,10 @@ public class SoundManager : MonoBehaviour {
     /// <summary>
     /// Pauses all audio sources managed by the SoundManager.
     /// </summary>
-    public void Pause() {
-        foreach (Sound s in sounds) {
+    public void Pause()
+    {
+        foreach (Sound s in sounds)
+        {
             s.source.Pause();
         }
     }
@@ -137,8 +163,10 @@ public class SoundManager : MonoBehaviour {
     /// <summary>
     /// Unpauses all previously paused audio sources managed by the SoundManager.
     /// </summary>
-    public void UnPause() {
-        foreach (Sound s in sounds) {
+    public void UnPause()
+    {
+        foreach (Sound s in sounds)
+        {
             s.source.UnPause();
         }
     }
